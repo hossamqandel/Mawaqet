@@ -1,7 +1,8 @@
-package com.devabits.mawaqet
+package com.devabits.mawaqet.feature_mawaqet.presentation
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import com.devabits.mawaqet.R
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
