@@ -3,7 +3,7 @@ package com.devabits.mawaqet.di
 import android.content.Context
 import androidx.room.Room
 import com.devabits.mawaqet.core.constants.local.RoomUtil
-import com.devabits.mawaqet.core.local.MawaqetDatabase
+import com.devabits.mawaqet.core.local.room.MawaqetDatabase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -13,7 +13,7 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object RoomModule {
+object DatabaseModule {
 
     @Provides
     @Singleton

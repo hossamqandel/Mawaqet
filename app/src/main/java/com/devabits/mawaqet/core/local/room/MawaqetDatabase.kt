@@ -1,4 +1,4 @@
-package com.devabits.mawaqet.core.local
+package com.devabits.mawaqet.core.local.room
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
