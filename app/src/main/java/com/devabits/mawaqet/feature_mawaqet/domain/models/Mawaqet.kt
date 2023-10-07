@@ -28,5 +28,5 @@ data class Date(
 
 data class Gregorian(
     val date: String,
-    val day: String,
+    val day: String
 )

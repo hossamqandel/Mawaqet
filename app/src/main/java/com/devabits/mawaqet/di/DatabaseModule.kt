@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.devabits.mawaqet.core.constants.local.RoomUtil
 import com.devabits.mawaqet.core.local.room.MawaqetDatabase
+import com.devabits.mawaqet.feature_mawaqet.data.local.MawaqetDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -25,6 +26,12 @@ object DatabaseModule {
             klass = MawaqetDatabase::class.java,
             name = RoomUtil.DATABASE_NAME
         ).build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideMawaqetDao(db: MawaqetDatabase): MawaqetDao {
+        return db.mawaqetDao()
     }
 
 }
