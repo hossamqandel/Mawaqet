@@ -6,6 +6,7 @@ import com.devabits.mawaqet.feature_mawaqet.data.local.MawaqetEntity
 import com.devabits.mawaqet.feature_mawaqet.domain.models.HttpResponse
 import com.devabits.mawaqet.feature_mawaqet.domain.models.Mawaqet
 import com.devabits.mawaqet.feature_mawaqet.domain.repository.MawaqetRepository
+import java.util.Collections
 import javax.inject.Inject
 
 class MawaqetRepositoryImpl @Inject constructor(
@@ -13,13 +14,21 @@ class MawaqetRepositoryImpl @Inject constructor(
     private val dao: MawaqetDao,
 ) : MawaqetRepository {
     override suspend fun getCurrentMonthMawaqet(): HttpResponse<Mawaqet> {
-        return api.getAzanMawaqet(
-            year = "2023",
-            month = "10",
-            country = "Egypt",
-            city = "Giza",
-            method = 5
-        )
+        return try {
+            api.getAzanMawaqet(
+                year = "2023",
+                month = "10",
+                country = "Egypt",
+                city = "Giza",
+                method = 5
+            )
+        }catch (e: Exception){
+            HttpResponse(
+                code = 404,
+                status = "",
+                Collections.emptyList()
+            )
+        }
     }
 
     override suspend fun getWeekFromCache(): List<MawaqetEntity> {

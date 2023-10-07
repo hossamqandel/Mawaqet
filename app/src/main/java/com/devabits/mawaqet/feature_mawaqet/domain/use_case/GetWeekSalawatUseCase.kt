@@ -10,6 +10,7 @@ import com.devabits.mawaqet.feature_mawaqet.domain.models.Mawaqet
 import com.devabits.mawaqet.feature_mawaqet.domain.models.Timings
 import com.devabits.mawaqet.feature_mawaqet.domain.repository.MawaqetRepository
 import java.util.Calendar
+import java.util.Collections
 import javax.inject.Inject
 
 class GetWeekSalawatUseCase @Inject constructor(
@@ -17,7 +18,7 @@ class GetWeekSalawatUseCase @Inject constructor(
 ) {
     @RequiresApi(Build.VERSION_CODES.R)
     suspend operator fun invoke(): List<MawaqetEntity> {
-        val isFirstVisit = repo.getWeekFromCache().isNullOrEmpty()
+        val isFirstVisit = repo.getWeekFromCache().isEmpty()
         return when (isFirstVisit) {
             true -> saveAsFirstTime()
             false -> repo.getWeekFromCache()
@@ -27,6 +28,9 @@ class GetWeekSalawatUseCase @Inject constructor(
     @RequiresApi(Build.VERSION_CODES.R)
     private suspend fun saveAsFirstTime(): List<MawaqetEntity> {
         val currentMonthMawaqet = repo.getCurrentMonthMawaqet()
+        if (currentMonthMawaqet.code == 404)
+            return Collections.emptyList()
+
         val mawaqetWeek = filterCurrentWeekDays(currentMonthMawaqet.data)
         val week = toEntityWeek(mawaqetWeek)
         repo.addWeek(week)
@@ -37,7 +41,6 @@ class GetWeekSalawatUseCase @Inject constructor(
     private fun filterCurrentWeekDays(month: List<Mawaqet>): List<Mawaqet> {
         val resultInWeek = mutableListOf<Mawaqet>()
         val currentWeekDays = CalendarUtil.getWeekDays(Calendar.SATURDAY)
-
         currentWeekDays.forEach { day ->
             month.forEach { mawaqet ->
                 if (day.equals(mawaqet.date.gregorian.date, true)) {

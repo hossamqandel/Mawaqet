@@ -90,4 +90,7 @@ dependencies {
     // Kotlin + coroutines
     implementation("androidx.work:work-runtime-ktx:$work_version")
 
+    //Pull to refresh
+    implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.2.0-alpha01")
+
 }

@@ -2,14 +2,19 @@ package com.devabits.mawaqet.feature_mawaqet.presentation
 
 import android.os.Build
 import android.os.Bundle
+import android.service.controls.ControlsProviderService.TAG
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isGone
+import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.devabits.mawaqet.core.android_util.alarm.AndroidAlarmScheduler
 import com.devabits.mawaqet.databinding.ActivityMainBinding
 import com.devabits.mawaqet.feature_mawaqet.data.local.MawaqetEntity
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -29,7 +34,8 @@ class MainActivity : AppCompatActivity() {
 
 
 
-    @RequiresApi(Build.VERSION_CODES.O)
+
+    @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mawaqetViewModel = ViewModelProvider(this)[MawaqetViewModel::class.java]
@@ -40,14 +46,19 @@ class MainActivity : AppCompatActivity() {
 
         collectState()
         schedulePrayers()
+        pullToRefresh()
     }
 
+    @RequiresApi(Build.VERSION_CODES.R)
+    @OptIn(ExperimentalCoroutinesApi::class)
     private fun collectState(){
-        lifecycleScope.launch {
-            mawaqetViewModel.state.collectLatest {
-                setupPrayersRecycler(it)
+            lifecycleScope.launch {
+                mawaqetViewModel.state.collectLatest {
+                    Log.i(TAG, "collectState: ${it.size}")
+                    setupPrayersRecycler(it)
+                    uiDataState(it)
+                }
             }
-        }
     }
     @RequiresApi(Build.VERSION_CODES.O)
     private fun schedulePrayers(){
@@ -61,13 +72,44 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupPrayersRecycler(mawaqet: List<MawaqetEntity>){
-        val formattedDay = dayFormat.format(currentDate)
-        val timings = mawaqet.firstOrNull { it.date.gregorian.date == formattedDay }?.timings
-        timings?.let {
-            mawaqetAdapter.setPrayers(it)
-            binding.rvPrayerTimes.adapter = mawaqetAdapter
+        if (mawaqet.isNotEmpty()){
+            val formattedDay = dayFormat.format(currentDate)
+            val timings = mawaqet.firstOrNull { it.date.gregorian.date == formattedDay }?.timings
+            timings?.let {
+                mawaqetAdapter.setPrayers(it)
+                binding.rvPrayerTimes.adapter = mawaqetAdapter
+            }
         }
     }
 
+    private fun uiDataState(mawaqet: List<MawaqetEntity>){
+        //TODO
+        //Collections.emptyList<MawaqetEntity>().isEmpty()
+        if (mawaqet.isNotEmpty()){
+            binding.apply {
+                tvPrayerName.isVisible = true
+                tvPrayerTime.isVisible = true
+                ivNoDataNoWifi.isGone = true
+                swipeToRefresh.isEnabled = false
+            }
+            return
+        }
+
+        binding.apply {
+            tvPrayerName.isGone = true
+            tvPrayerTime.isGone = true
+            ivNoDataNoWifi.isVisible = true
+            swipeToRefresh.isEnabled = true
+        }
+        return
+    }
+
+    @RequiresApi(Build.VERSION_CODES.R)
+    private fun pullToRefresh(){
+        binding.swipeToRefresh.setOnRefreshListener {
+            mawaqetViewModel.getMawaqet()
+            binding.swipeToRefresh.isRefreshing = false
+        }
+    }
 
 }
