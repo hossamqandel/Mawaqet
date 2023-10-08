@@ -10,11 +10,11 @@ import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import com.devabits.mawaqet.core.android_util.alarm.AlarmItem
 import com.devabits.mawaqet.core.android_util.alarm.AndroidAlarmScheduler
 import com.devabits.mawaqet.databinding.ActivityMainBinding
 import com.devabits.mawaqet.feature_mawaqet.data.local.MawaqetEntity
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -27,48 +27,43 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var mawaqetViewModel: MawaqetViewModel
     private lateinit var scheduler: AndroidAlarmScheduler
+    private lateinit var mawaqetAlarmScheduler: MawaqetAlarmScheduler
     private lateinit var mawaqetAdapter: MawaqetAdapter
     private lateinit var binding: ActivityMainBinding
     private val currentDate = Date()
     private val dayFormat = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
-
-
-
 
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mawaqetViewModel = ViewModelProvider(this)[MawaqetViewModel::class.java]
         scheduler = AndroidAlarmScheduler(this)
+        mawaqetAlarmScheduler = MawaqetAlarmScheduler(alarmScheduler = scheduler)
         mawaqetAdapter = MawaqetAdapter()
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         collectState()
-        schedulePrayers()
         pullToRefresh()
     }
 
     @RequiresApi(Build.VERSION_CODES.R)
-    @OptIn(ExperimentalCoroutinesApi::class)
     private fun collectState(){
             lifecycleScope.launch {
                 mawaqetViewModel.state.collectLatest {
                     Log.i(TAG, "collectState: ${it.size}")
                     setupPrayersRecycler(it)
                     uiDataState(it)
+                    schedulePrayers(it)
                 }
             }
     }
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun schedulePrayers(){
-//        val alarmTest = AlarmItem(
-//            id =  Random.nextInt(1, 9000000),
-//            name = "Salah",
-//            time = 1696624200000,
-//            message = "حان الان موعد المين اكتيفيتي"
-//        )
-//        scheduler.schedule(alarmTest)
+    private fun schedulePrayers(mawaqet: List<MawaqetEntity>){
+        if (mawaqet.isNotEmpty()) {
+            mawaqetAlarmScheduler.setMawaqet(mawaqet)
+            mawaqetAlarmScheduler.setNextSalatAlarm()
+        }
     }
 
     private fun setupPrayersRecycler(mawaqet: List<MawaqetEntity>){
@@ -83,8 +78,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun uiDataState(mawaqet: List<MawaqetEntity>){
-        //TODO
-        //Collections.emptyList<MawaqetEntity>().isEmpty()
         if (mawaqet.isNotEmpty()){
             binding.apply {
                 tvPrayerName.isVisible = true

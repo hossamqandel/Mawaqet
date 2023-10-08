@@ -7,7 +7,6 @@ import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.devabits.mawaqet.feature_mawaqet.data.local.MawaqetEntity
-import com.devabits.mawaqet.feature_mawaqet.domain.repository.MawaqetRepository
 import com.devabits.mawaqet.feature_mawaqet.domain.use_case.GetWeekSalawatUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -16,11 +15,10 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.util.Collections
 import javax.inject.Inject
-
 @RequiresApi(Build.VERSION_CODES.R)
 @HiltViewModel
 class MawaqetViewModel @Inject constructor(
-    private val useCase: GetWeekSalawatUseCase
+    private val getWeekSalawatUseCase: GetWeekSalawatUseCase
 ) : ViewModel(){
 
     private val _state = MutableStateFlow(Collections.emptyList<MawaqetEntity>())
@@ -31,12 +29,18 @@ class MawaqetViewModel @Inject constructor(
         getMawaqet()
     }
 
+
     fun getMawaqet() {
         mawaqetJob?.cancel()
         mawaqetJob = viewModelScope.launch {
-            val data = useCase()
+            val data = getWeekSalawatUseCase()
             _state.value = data
             Log.i(TAG, "getMawaqetWeekDays: ${data.size}")
         }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        mawaqetJob?.cancel()
     }
 }

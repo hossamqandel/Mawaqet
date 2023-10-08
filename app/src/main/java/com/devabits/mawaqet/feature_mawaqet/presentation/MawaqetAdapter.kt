@@ -35,5 +35,5 @@ class MawaqetAdapter : RecyclerView.Adapter<MawaqetVH>() {
         holder.markNextSalah(data)
     }
 
-    override fun getItemCount(): Int = data.size ?: 0
+    override fun getItemCount(): Int = data.size
 }

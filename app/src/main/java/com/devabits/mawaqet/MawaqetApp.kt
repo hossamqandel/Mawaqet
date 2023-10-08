@@ -4,10 +4,11 @@ import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
+import android.graphics.Color
 import android.os.Build
 import androidx.work.PeriodicWorkRequest
 import androidx.work.WorkManager
-import com.devabits.mawaqet.core.local.shared_preference.SharedPref
+import com.devabits.mawaqet.core.android_util.notification.NotificationUtil
 import com.devabits.mawaqet.feature_mawaqet.presentation.UpdateWeekSalawatWorker
 import dagger.hilt.android.HiltAndroidApp
 import java.util.concurrent.TimeUnit
@@ -17,7 +18,6 @@ class MawaqetApp : Application(){
 
     override fun onCreate() {
         super.onCreate()
-        SharedPref.initShared(appContext = this)
         createNotificationChannel()
         setNextWeekSalawatWorker()
     }
@@ -25,10 +25,15 @@ class MawaqetApp : Application(){
     private fun createNotificationChannel() {
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
-                "ChanelId",
-                "Azan Time",
-                NotificationManager.IMPORTANCE_DEFAULT)
-            channel.description = "Used for the Azan"
+                NotificationUtil.CHANNEL_ID,
+                NotificationUtil.CHANNEL_NAME,
+                NotificationManager.IMPORTANCE_HIGH
+            ).apply {
+                description = NotificationUtil.DESCRIPTION
+                lightColor = Color.MAGENTA
+                enableLights(true)
+                enableVibration(true)
+            }
 
             val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channel)
@@ -36,12 +41,12 @@ class MawaqetApp : Application(){
     }
 
     private fun setNextWeekSalawatWorker(){
-        val worker = WorkManager.getInstance(applicationContext)
+        val worker = WorkManager.getInstance(this)
         val request = PeriodicWorkRequest.Builder(
             workerClass = UpdateWeekSalawatWorker::class.java,
             repeatInterval = 7,
-            repeatIntervalTimeUnit = TimeUnit.DAYS)
-            .build()
+            repeatIntervalTimeUnit = TimeUnit.DAYS
+        ).build()
         worker.enqueue(request)
     }
 }
