@@ -3,9 +3,9 @@
 ### Mawaqet is a simple Android app assists users in viewing prayer times based on the selected city, along with the ability to activate an Azan alarm voice when it's time to pray
 
 <div align="center">
-  <img src="https://i.ibb.co/YRjvDdz/Mawaqet-Permission.png" width="300" height="600">
-  <img src="https://i.ibb.co/cwqy7QL/Mawaqet-Offline.png" width="300" height="600">
-  <img src="https://i.ibb.co/cvTsM8Q/Mawaqet.png" width="300" height="600">
+  <img src="https://i.ibb.co/YRjvDdz/Mawaqet-Permission.png" width="200" height="400">
+  <img src="https://i.ibb.co/cwqy7QL/Mawaqet-Offline.png" width="200" height="400">
+  <img src="https://i.ibb.co/cvTsM8Q/Mawaqet.png" width="200" height="400">
 </div>
 
 
