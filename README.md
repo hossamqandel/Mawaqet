@@ -8,6 +8,15 @@
   <img src="https://i.ibb.co/cvTsM8Q/Mawaqet.png" width="200" height="400">
 </div>
 
+# Watch Video
+[Watch Mawaqet on Android 13](https://streamable.com/ho9ekk)
+
+[Watch Mawaqet on Android 8](https://streamable.com/sicn3k)
+
+# Download & Test
+[Mawaqet APK](https://filebin.net/vgwi51ryzfh66h2j)
+
+
 
 ## Built With 🛠
   - [Kotlin](https://kotlinlang.org/) - First class and official programming language for Android development.
